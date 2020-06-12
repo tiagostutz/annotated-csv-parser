@@ -17,7 +17,7 @@ const parseValue = (val: string, type: string): number | string | Date => {
     return val;
   }
 };
-export const parseAnnotatedCSV = (csvText: string): Array<any> => {
+export const parseAnnotatedCSV = (csvText: string): Array<Array<any>> => {
   const rows = csvText.split(/\n/);
 
   let result: {
