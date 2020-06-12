@@ -84,3 +84,26 @@ Deno.test("Table with one simple line using default value", () => {
   assertEquals(jsonArray[0][0].name, "dummy");
   assertEquals(jsonArray[0][0].process, "bar");
 });
+
+Deno.test("Table with using default value for the _result and comma inside quotes", () => {
+  const csvContent =
+    `#datatype,string,long,dateTime:RFC3339,double,string,string
+    #group,false,false,false,false,true,true
+    #default,_result,,,,,
+    ,result,table,_time,_value,name,process
+    ,,29,2020-05-19T19:50:00Z,1,"Wait, how are you doing?",Greetings`;
+
+  const jsonArray = parseAnnotatedCSV(csvContent);
+
+  assertEquals(jsonArray.length, 1);
+  assertEquals(jsonArray[0].length, 1);
+  assertEquals(jsonArray[0][0].result, "_result");
+  assertEquals(jsonArray[0][0].table, 29);
+  assertEquals(jsonArray[0][0]._time.getTime(), 1589917800000);
+  assertEquals(jsonArray[0][0]._value, 1.0);
+  assertEquals(
+    jsonArray[0][0].name,
+    "Wait, how are you doing?",
+  );
+  assertEquals(jsonArray[0][0].process, "Greetings");
+});

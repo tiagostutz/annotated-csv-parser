@@ -9,6 +9,11 @@ const parseValue = (val: string, type: string): number | string | Date => {
   } else if (type.match(/dateTime/)) {
     return new Date(val);
   } else {
+    const escapedVal = val.match(/^"(.*)"$/); //handle the case when the value has commas and is escaped with quotes
+    if (escapedVal) {
+      return escapedVal[1];
+    }
+
     return val;
   }
 };
@@ -39,7 +44,7 @@ export const parseAnnotatedCSV = (csvText: string): Array<any> => {
       continue;
     }
 
-    let cells = row.split(/,/);
+    let cells = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/); //match simple commas but also commas inside quotes, like: foo,"hi, dear friend",bar => (foo) (hi, dear friend) (bar)
     cells = cells.slice(1);
     if (row.match(/^#datatype/)) {
       attrTypes = attrTypes.concat(cells);
